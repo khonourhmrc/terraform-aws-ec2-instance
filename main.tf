@@ -29,7 +29,7 @@ resource "aws_instance" "this" {
   dynamic "root_block_device" {
     for_each = var.root_block_device
     content {
-      delete_on_termination = lookup(root_block_device.value, "delete_on_termination", null)
+      delete_on_termination = lookup(root_block_device.value, "delete_on_termination", 9)
       encrypted             = lookup(root_block_device.value, "encrypted", null)
       iops                  = lookup(root_block_device.value, "iops", null)
       kms_key_id            = lookup(root_block_device.value, "kms_key_id", null)
@@ -92,5 +92,11 @@ resource "aws_instance" "this" {
 
   credit_specification {
     cpu_credits = local.is_t_instance_type ? var.cpu_credits : null
+  }
+
+  lifecycle {
+    ignore_changes = [
+      volume_tags,
+    ]
   }
 }
